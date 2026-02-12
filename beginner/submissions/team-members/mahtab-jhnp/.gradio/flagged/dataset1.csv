@@ -1,0 +1,2 @@
+Origin (city),Destination (city),Trip length (days),Budget (example: 800 dollars),"Interests (example: museums, food)",Your Trip Plan,timestamp
+cincinnati,Chicago ,7,2500,BEACH ,"OpenAI error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: your_ope********here. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}",2026-02-11 22:13:31.737596
