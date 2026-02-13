@@ -1,6 +1,7 @@
 import os
 #load_dotenv() reads .env and puts its values into environment variables
-from dotenv import load_dotenv 
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
 import gradio as gr
 from tavily import TavilyClient
 from openai import OpenAI
