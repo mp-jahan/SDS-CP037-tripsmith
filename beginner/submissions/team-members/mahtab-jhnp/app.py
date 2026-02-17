@@ -38,7 +38,7 @@ def tavily_search(query: str, max_results: int = 5) -> str:
         return f"Search error: {e}"
 
 # build the prompt fo the AI
-def build_prompt(origin, destination, days, budget, interests, flights_text, hotels_text, pois_text):
+def build_prompt(origin, destination, days, budget, interests, pace, flights_text, hotels_text, pois_text):
     return f"""
 You are a travel planner.
 
@@ -48,6 +48,11 @@ User info:
 - Trip length (days): {days}
 - Budget: {budget}
 - Interests: {interests}
+- Pace : {pace}
+Pace rules:
+- Relaxed: fewer activities per day, more breaks, avoid rushing.
+- Normal: balanced schedule, moderate walking.
+- Packed: more activities per day, early starts, efficient routes.
 
 Search results (use these to make the plan realistic):
 Flights:
@@ -63,13 +68,13 @@ Task:
 Create a clear day-by-day itinerary for {days} days.
 Include:
 - morning / afternoon / evening
-- 2 to 4 activities per day
-- 1 food suggestion per day
+- 2 to 4 activities per day (use the pace rules)
+- 2 food suggestion per day
 Keep it simple and readable in Markdown.
 """
 
 
-def plan_trip(origin, destination, days, budget, interests):
+def plan_trip(origin, destination, days, budget, interests,pace):
     flights_q = f"best flights from {origin} to {destination}"
     hotels_q = f"best hotels in {destination} under {budget} budget"
     pois_q = f"top attractions in {destination} for {interests}"
@@ -78,7 +83,7 @@ def plan_trip(origin, destination, days, budget, interests):
     hotels_text = tavily_search(hotels_q)
     pois_text = tavily_search(pois_q)
 
-    prompt = build_prompt(origin, destination, days, budget, interests, flights_text, hotels_text, pois_text)
+    prompt = build_prompt(origin, destination, days, budget, interests,pace,flights_text, hotels_text, pois_text)
 
     try:
         resp = client.chat.completions.create(
@@ -97,15 +102,22 @@ def plan_trip(origin, destination, days, budget, interests):
 demo = gr.Interface(
     fn=plan_trip,
     inputs=[
-        gr.Textbox(label="Origin (city)"),
-        gr.Textbox(label="Destination (city)"),
-        gr.Number(label="Trip length (days)", value=3),
-        gr.Textbox(label="Budget (example: 800 dollars)"),
-        gr.Textbox(label="Interests (example: museums, food)"),
+        gr.Textbox(label="🌍 Origin (city)", placeholder="Atlanta"),
+        gr.Textbox(label="📍 Destination (city)", placeholder="New York"),
+        gr.Number(label="🗓️ Trip length (days)", value=3),
+        gr.Textbox(label="💰 Budget (example: 800 dollars)", placeholder="800"),
+        gr.Textbox(label="🎯 Interests (example: museums, food)", placeholder="museums, food"),
+        gr.Dropdown(
+            label="⚡ Pace",
+            choices=["Relaxed", "Normal", "Packed"],
+            value="Normal"
+        ),
     ],
-    outputs=gr.Markdown(label="Your Trip Plan"),
-    title="TripSmith Travel Planner",
+    outputs=gr.Markdown(label="🧾 Your Trip Plan"),
+    title="🧳 TripSmith Travel Planner",
+    description="🔎 Tavily web search + 🤖 OpenAI LLM itinerary generation",
 )
+
 
 if __name__ == "__main__":
     demo.launch()
