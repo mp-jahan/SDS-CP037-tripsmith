@@ -118,6 +118,5 @@ demo = gr.Interface(
     description="🔎 Tavily web search + 🤖 OpenAI LLM itinerary generation",
 )
 
-
 if __name__ == "__main__":
     demo.launch()
